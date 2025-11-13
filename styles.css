@@ -1,0 +1,59 @@
+body {
+font-family: Arial, sans-serif;
+background-color: #f3f3f3;
+margin: 0;
+padding: 0;
+}
+header {
+background-color: #004080;
+color: white;
+text-align: center;
+padding: 15px;
+}
+#datahora {
+font-size: 14px;
+color:#eedf13;
+text-align: end;
+}
+main {
+max-width: 700px;
+margin: 30px auto;
+background: white;
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 0 10px gray;
+}
+h2 {
+color: #004080;
+}
+label {
+font-weight: bold;
+}
+input, select, button {
+padding: 8px;
+margin: 5px 0 15px 0;
+width: 100%;
+border-radius: 5px;
+border: 1px solid #ccc;
+}
+button {
+background-color: #004080;
+color: white;
+font-weight: bold;
+cursor: pointer;
+}
+button:hover {
+background-color: #0066cc;
+}
+button:disabled {
+background-color: #999;
+cursor: not-allowed;
+}
+
+.resultado {
+background: #eef;
+border: 1px solid #004080;
+padding: 10px;
+border-radius: 8px;
+margin-top: 15px;
+}
