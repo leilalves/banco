@@ -70,7 +70,7 @@ return;
 }
 conta.saldo += valor;
 // Registra movimentação com data/hora
-movimentacoes.push(`${obterDataHoraAtual()} Depósito de R$ ${valor.toFixed(2)}`);
+movimentacoes.push(`${obterDataHoraAtual()} ${conta.nomeCliente} realizou um depósito de R$ ${valor.toFixed(2)}`);
 document.getElementById("resOperacoes").innerHTML =
 `💰 Depósito realizado! Saldo atual: <strong>R$
 ${conta.saldo.toFixed(2)}</strong>`;
@@ -92,7 +92,7 @@ return;
 }
 conta.saldo -= valor;
 // Registra movimentação com data/hora
-movimentacoes.push(`${obterDataHoraAtual()} Saque de R$ ${valor.toFixed(2)}`);
+movimentacoes.push(`${obterDataHoraAtual()} ${conta.nomeCliente}realizou um saque de R$ ${valor.toFixed(2)}`);
 document.getElementById("resOperacoes").innerHTML =
 `💸 Saque realizado! Saldo atual: <strong>R$
 ${conta.saldo.toFixed(2)}</strong>`;
