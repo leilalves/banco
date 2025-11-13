@@ -5,17 +5,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="styles.css">
 <title>Simulador de Banco em JavaScript</title>
+<style>
+
+</style>
 </head>
 <body>
-    <script src="script.js"></script>
 <header>
-        <div id='datahora'></div>
-       <h1> 🏦 Banco SENAICRED em JavaScript</h1>
+<h1>💰 Banco SENAICRED em JavaScript</h1>
+<div id="dataHora"></div>
 </header>
 <main>
 <h2>Abertura de Conta</h2>
 <label>Nome do Cliente:</label>
-<input type="text" id="nome">
+<input type="text" id="nome" placeholder="Digite o nome do cliente">
 <label>Tipo de Conta:</label>
 <select id="tipoConta">
 <option value="corrente">Conta Corrente</option>
@@ -31,6 +33,5 @@
 Movimentações</button>
 <button id="btnEncerrar" onclick="encerrarConta()" disabled>Encerrar Conta</button>
 <div class="resultado" id="resOperacoes"></div>
+<script src="script.js"></script>
 </main>
-</body>
-</html>

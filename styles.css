@@ -1,3 +1,6 @@
+/* =============================================================
+ESTILOS GERAIS
+============================================================= */
 body {
 font-family: Arial, sans-serif;
 background-color: #f3f3f3;
@@ -5,15 +8,21 @@ margin: 0;
 padding: 0;
 }
 header {
-background-color: #3c0189;
+background-color: #5e0080;
 color: white;
 text-align: center;
 padding: 15px;
+position: relative;
 }
-#datahora {
-font-size: 14px;
-color:#eedf13;
-text-align: end;
+#dataHora {
+position: absolute;
+top: 8px;
+right: 15px;
+font-size: 0.9em;
+color: yellow;
+font-weight: bold;
+text-align: right;
+line-height: 1.2em;
 }
 main {
 max-width: 700px;
@@ -21,13 +30,10 @@ margin: 30px auto;
 background: white;
 padding: 20px;
 border-radius: 10px;
-box-shadow: 0 0 10px rgb(125, 74, 169);
+box-shadow: 0 0 10px gray;
 }
 h2 {
-color: #3c0189;
-}
-label {
-font-weight: bold;
+color: #830aab;
 }
 input, select, button {
 padding: 8px;
@@ -37,23 +43,32 @@ border-radius: 5px;
 border: 1px solid #ccc;
 }
 button {
-background-color: #822acf;
+background-color: #6e088a;
 color: white;
 font-weight: bold;
+
 cursor: pointer;
 }
 button:hover {
-background-color: #9b5ae1;
+background-color: #9c00cc;
 }
 button:disabled {
-background-color: #9378a4;
+background-color: #9e7dab;
 cursor: not-allowed;
 }
-
 .resultado {
 background: #eef;
-border: 1px solid #822acf;
+border: 1px solid #5c0080;
 padding: 10px;
 border-radius: 8px;
 margin-top: 15px;
+}
+/* Mensagens coloridas */
+.mensagem-verde {
+color: #007700;
+font-weight: bold;
+}
+.mensagem-vermelha {
+color: #cc0000;
+font-weight: bold;
 }
