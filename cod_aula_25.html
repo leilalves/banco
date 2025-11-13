@@ -1,0 +1,344 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulador de Banco em JavaScript</title>
+
+<style>
+  /* =============================================================
+     ESTILOS GERAIS
+     ============================================================= */
+  body {
+    font-family: Arial, sans-serif;
+    background-color: #f3f3f3;
+    margin: 0;
+    padding: 0;
+  }
+
+  header {
+    background-color: #004080;
+    color: white;
+    text-align: center;
+    padding: 15px;
+    position: relative;
+  }
+
+  #dataHora {
+    position: absolute;
+    top: 8px;
+    right: 15px;
+    font-size: 0.9em;
+    color: yellow;
+    font-weight: bold;
+    text-align: right;
+    line-height: 1.2em;
+  }
+
+  main {
+    max-width: 700px;
+    margin: 30px auto;
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px gray;
+  }
+
+  h2 {
+    color: #004080;
+  }
+
+  input, select, button {
+    padding: 8px;
+    margin: 5px 0 15px 0;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+
+  button {
+    background-color: #004080;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  button:hover {
+    background-color: #0066cc;
+  }
+
+  button:disabled {
+    background-color: #999;
+    cursor: not-allowed;
+  }
+
+  .resultado {
+    background: #eef;
+    border: 1px solid #004080;
+    padding: 10px;
+    border-radius: 8px;
+    margin-top: 15px;
+  }
+
+  /* Mensagens coloridas */
+  .mensagem-verde {
+    color: #007700;
+    font-weight: bold;
+  }
+
+  .mensagem-vermelha {
+    color: #cc0000;
+    font-weight: bold;
+  }
+</style>
+</head>
+<body>
+<header>
+<h1>💰 Banco SENAICRED em JavaScript</h1>
+<div id="dataHora"></div>
+</header>
+<main>
+<h2>Abertura de Conta</h2>
+<label>Nome do Cliente:</label>
+<input type="text" id="nome" placeholder="Digite o nome do cliente">
+<label>Tipo de Conta:</label>
+<select id="tipoConta">
+<option value="corrente">Conta Corrente</option>
+<option value="poupanca">Conta Poupança</option>
+<option value="credito">Cartão de Crédito</option>
+</select>
+<button id="btnAbrir" onclick="abrirConta()">Abrir Conta</button>
+<div class="resultado" id="resConta"></div>
+<h2>Operações Bancárias</h2>
+<button id="btnDepositar" onclick="depositar()" disabled>Depositar</button>
+<button id="btnSacar" onclick="sacar()" disabled>Sacar</button>
+<button id="btnSaldo" onclick="verSaldo()" disabled>Ver Saldo</button>
+<button id="btnMov" onclick="listarMovimentos()" disabled>Listar
+Movimentações</button>
+<button id="btnEncerrar" onclick="encerrarConta()" disabled>Encerrar Conta</button>
+<div class="resultado" id="resOperacoes"></div>
+<body>
+
+
+
+<script>
+  /* =============================================================
+     VARIÁVEIS GLOBAIS
+     ============================================================= */
+  let conta = null;
+  let movimentacoes = [];
+  let ultimaDataDeposito = null; // armazena a data do último depósito (Date)
+
+  /* =============================================================
+     FUNÇÕES DE DATA E HORA
+     ============================================================= */
+  function atualizarDataHora() {
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-BR');
+    const hora = agora.toLocaleTimeString('pt-BR');
+    document.getElementById('dataHora').innerHTML = `${data}<br>${hora}`;
+  }
+  setInterval(atualizarDataHora, 1000);
+  atualizarDataHora();
+
+  function obterDataHoraAtual() {
+    const agora = new Date();
+    const data = agora.toLocaleDateString('pt-BR');
+    const hora = agora.toLocaleTimeString('pt-BR');
+    return `[${data} ${hora}]`;
+  }
+
+  /* =============================================================
+     FUNÇÃO: abrirConta()
+  ============================================================= */
+  function abrirConta() {
+    const nome = document.getElementById("nome").value.trim();
+    const tipo = document.getElementById("tipoConta").value;
+
+    if (nome === "") {
+      alert("Por favor, informe o nome do cliente!");
+      return;
+    }
+
+    conta = {
+      nomeCliente: nome,
+      tipoConta: tipo,
+      saldo: 0,
+      ativa: true
+    };
+
+    movimentacoes = [];
+    movimentacoes.push(`${obterDataHoraAtual()} Conta ${tipo} aberta para ${nome}.`);
+
+    document.getElementById("resConta").innerHTML =
+      `✅ Conta cartão de <strong>${tipo}</strong> criada com sucesso para <strong>${nome}</strong>.`;
+
+    if (conta.tipoCartao === "credito") {
+      document.getElementById("resConta").innerHTML +=
+        `<br>💳 Cartão de Crédito criado com sucesso para <strong>${nome}</strong>.`;
+    }
+
+    document.getElementById("nome").disabled = true;
+    document.getElementById("tipoConta").disabled = true;
+    document.getElementById("btnAbrir").disabled = true;
+    habilitarOperacoes(true);
+  }
+
+  /* =============================================================
+     FUNÇÃO: habilitarOperacoes(estado)
+  ============================================================= */
+  function habilitarOperacoes(estado) {
+    document.getElementById("btnDepositar").disabled = !estado;
+    document.getElementById("btnSacar").disabled = !estado;
+    document.getElementById("btnSaldo").disabled = !estado;
+    document.getElementById("btnMov").disabled = !estado;
+    document.getElementById("btnEncerrar").disabled = !estado;
+  }
+
+  /* =============================================================
+     FUNÇÃO: depositar()
+  ============================================================= */
+  function depositar() {
+    if (!contaAtiva()) return;
+
+    const valor = parseFloat(prompt("Digite o valor do depósito:"));
+    if (isNaN(valor) || valor <= 0) {
+      alert("Valor inválido!");
+      return;
+    }
+
+    conta.saldo += valor;
+    ultimaDataDeposito = new Date();
+    movimentacoes.push(`${obterDataHoraAtual()} Depósito de R$ ${valor.toFixed(2)}`);
+
+    document.getElementById("resOperacoes").innerHTML =
+      `💰 Depósito realizado! Saldo atual: <strong>R$ ${conta.saldo.toFixed(2)}</strong>`;
+  }
+
+  /* =============================================================
+     FUNÇÃO: sacar()
+     - Implementa juros da poupança (0,5%) após 30 dias
+     - Mostra valor potencial com juros se sacar antes do prazo
+  ============================================================= */
+  function sacar() {
+    if (!contaAtiva()) return;
+
+    const valor = parseFloat(prompt("Digite o valor do saque:"));
+    if (isNaN(valor) || valor <= 0) {
+      alert("Valor inválido!");
+      return;
+    }
+
+    if (valor > conta.saldo) {
+      alert("Saldo insuficiente!");
+      return;
+    }
+
+    // Verifica se é conta poupança e se há registro de depósito
+    if (conta.tipoConta === "poupanca" && ultimaDataDeposito) {
+      const hoje = new Date();
+      const diasDecorridos = Math.floor((hoje - ultimaDataDeposito) / (1000 * 60 * 60 * 24));
+
+      if (diasDecorridos >= 30) {
+        // ✅ Após 30 dias → aplica juros de 0,5%
+        const juros = conta.saldo * 0.005;
+        conta.saldo += juros;
+        movimentacoes.push(`${obterDataHoraAtual()} Juros de 0,5% aplicados: R$ ${juros.toFixed(2)}`);
+        document.getElementById("resOperacoes").innerHTML =
+          `<p class="mensagem-verde">🎉 Parabéns, ${conta.nomeCliente}! Você ganhou 0,5% de juros da poupança!</p>
+           <p>Saldo atualizado com juros: <strong>R$ ${conta.saldo.toFixed(2)}</strong></p>`;
+      } else {
+        // ⚠️ Antes dos 30 dias → alerta de perda de juros
+        const jurosPerdidos = conta.saldo * 0.005;
+        const saldoComJuros = conta.saldo + jurosPerdidos;
+
+        const confirma = confirm(`⚠️ O saque está sendo feito com apenas ${diasDecorridos} dias desde o depósito.\nVocê perderá os juros da poupança. Deseja continuar?`);
+        if (!confirma) {
+          document.getElementById("resOperacoes").innerHTML =
+            `<p class="mensagem-vermelha">Saque cancelado! Aguarde completar 30 dias para manter os juros da poupança.</p>
+             <p>Se aguardasse os 30 dias, seu saldo seria de <strong>R$ ${saldoComJuros.toFixed(2)}</strong> (com ganho de R$ ${jurosPerdidos.toFixed(2)} em juros).</p>`;
+          return;
+        } else {
+          document.getElementById("resOperacoes").innerHTML =
+            `<p class="mensagem-vermelha">⚠️ O cliente optou por sacar antes dos 30 dias e perdeu os juros da poupança.</p>
+             <p>Saldo atual: <strong>R$ ${conta.saldo.toFixed(2)}</strong><br>
+             Valor que seria com juros: <strong>R$ ${saldoComJuros.toFixed(2)}</strong></p>`;
+        }
+      }
+    }
+
+    // Realiza o saque
+    conta.saldo -= valor;
+    movimentacoes.push(`${obterDataHoraAtual()} Saque de R$ ${valor.toFixed(2)}`);
+    document.getElementById("resOperacoes").innerHTML +=
+      `<p>💸 Saque realizado! Saldo atual: <strong>R$ ${conta.saldo.toFixed(2)}</strong></p>`;
+  }
+
+  /* =============================================================
+     FUNÇÃO: verSaldo()
+  ============================================================= */
+  function verSaldo() {
+    if (!contaAtiva()) return;
+    document.getElementById("resOperacoes").innerHTML =
+      `📊 Saldo atual: <strong>R$ ${conta.saldo.toFixed(2)}</strong>`;
+  }
+
+  /* =============================================================
+     FUNÇÃO: listarMovimentos()
+  ============================================================= */
+  function listarMovimentos() {
+    if (!contaAtiva()) return;
+
+    if (movimentacoes.length === 0) {
+      document.getElementById("resOperacoes").innerHTML =
+        "Nenhuma movimentação registrada.";
+      return;
+    }
+
+    const lista = movimentacoes.join("<br>");
+    document.getElementById("resOperacoes").innerHTML =
+      `<strong>📜 Movimentações:</strong><br>${lista}`;
+  }
+
+  /* =============================================================
+     FUNÇÃO: encerrarConta()
+  ============================================================= */
+  function encerrarConta() {
+    if (!contaAtiva()) return;
+
+    const confirma = confirm("Tem certeza que deseja encerrar a conta?");
+    if (confirma) {
+      movimentacoes.push(`${obterDataHoraAtual()} Conta de ${conta.nomeCliente} encerrada.`);
+
+      document.getElementById("resOperacoes").innerHTML =
+        `⚠️ Conta de <strong>${conta.nomeCliente}</strong> encerrada com sucesso!<br><br>
+         Últimas movimentações:<br>${movimentacoes.join("<br>")}`;
+
+      document.getElementById("nome").value = "";
+      document.getElementById("tipoConta").value = "corrente";
+      document.getElementById("nome").disabled = false;
+      document.getElementById("tipoConta").disabled = false;
+      document.getElementById("btnAbrir").disabled = false;
+      habilitarOperacoes(false);
+
+      conta = null;
+      movimentacoes = [];
+      ultimaDataDeposito = null;
+      document.getElementById("resConta").innerHTML = "";
+    }
+  }
+
+  /* =============================================================
+     FUNÇÃO: contaAtiva()
+  ============================================================= */
+  function contaAtiva() {
+    if (!conta || !conta.ativa) {
+      alert("Nenhuma conta ativa! Abra uma nova conta primeiro.");
+      return false;
+    }
+    return true;
+  }
+</script>
+
+</body>
+</html>
