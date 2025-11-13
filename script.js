@@ -30,6 +30,7 @@ if (nome === "") {
 alert("Por favor, informe o nome do cliente!");
 return;
 }
+
 // Criação do objeto "conta"
 conta = {
 nomeCliente: nome,
@@ -42,12 +43,15 @@ movimentacoes = []; // limpa movimentações anteriores
 document.getElementById("resConta").innerHTML =
 `✅ Conta <strong>${tipo}</strong> criada com sucesso para
 <strong>${nome}</strong>.`;
+movimentacoes.push(`${obterDataHoraAtual().complemento} ${nome} criou uma conta `);
+
 // Desabilita campos de abertura e habilita operações
 document.getElementById("nome").disabled = true;
 document.getElementById("tipoConta").disabled = true;
 document.getElementById("btnAbrir").disabled = true;
 habilitarOperacoes(true);
 }
+
 /* ------------------------------------------------------------
 Função que habilita ou desabilita os botões de operação
 ------------------------------------------------------------ */
@@ -58,6 +62,7 @@ document.getElementById("btnSaldo").disabled = !estado;
 document.getElementById("btnMov").disabled = !estado;
 document.getElementById("btnEncerrar").disabled = !estado;
 }
+
 /* ------------------------------------------------------------
 Função de depósito
 ------------------------------------------------------------ */
@@ -70,11 +75,12 @@ return;
 }
 conta.saldo += valor;
 // Registra movimentação com data/hora
-movimentacoes.push(`${obterDataHoraAtual()} ${conta.nomeCliente} realizou um depósito de R$ ${valor.toFixed(2)}`);
+movimentacoes.push(`${obterDataHoraAtual().complemento} ${conta.nomeCliente} realizou um depósito de R$ ${valor.toFixed(2)}`);
 document.getElementById("resOperacoes").innerHTML =
 `💰 Depósito realizado! Saldo atual: <strong>R$
 ${conta.saldo.toFixed(2)}</strong>`;
 }
+
 /* ------------------------------------------------------------
 Função de saque
 ------------------------------------------------------------ */
@@ -92,7 +98,7 @@ return;
 }
 conta.saldo -= valor;
 // Registra movimentação com data/hora
-movimentacoes.push(`${obterDataHoraAtual()} ${conta.nomeCliente}realizou um saque de R$ ${valor.toFixed(2)}`);
+movimentacoes.push(`${obterDataHoraAtual().complemento} ${conta.nomeCliente} realizou um saque de R$ ${valor.toFixed(2)}`);
 document.getElementById("resOperacoes").innerHTML =
 `💸 Saque realizado! Saldo atual: <strong>R$
 ${conta.saldo.toFixed(2)}</strong>`;
